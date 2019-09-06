@@ -1,5 +1,6 @@
 const MAX_KNAPSACK_CAPACITY = 50;
 const MAX_CHROMOSOMES = 10;
+const MAX_GENERATIONS = 100;
 
 const global_items = [{
         name: 'Hamburguer',
@@ -47,7 +48,7 @@ let initialize = () => {
 
     for (let i = 0; i < MAX_CHROMOSOMES; i++) {
         population[i] = {
-            chromosomes: generateChromosome(),
+            chromosome: generateChromosome(),
             totalProfit: 0
         }
     }
@@ -57,8 +58,8 @@ let initialize = () => {
 let evaluate = (population) => {
     let sum = 0;
     for (let i = 0; i < population.length; i++) {
-        for (let j = 0; j < population[i].chromosomes.length; j++) {
-            if (population[i].chromosomes[j] == 1) {
+        for (let j = 0; j < population[i].chromosome.length; j++) {
+            if (population[i].chromosome[j] == 1) {
                 sum += global_items[j].profit;
             }
         }
@@ -70,13 +71,28 @@ let evaluate = (population) => {
 
 }
 
+let selectParents = (population) => {
+    let totalSumProfit = 0;
+    for (let i = 0; i < population.length; i++) {
+        totalSumProfit += population[i].totalProfit;
+    }
+
+    let randomIndex = parseInt(Math.random() * totalSumProfit);
+    let i = 0;
+    let partialTotal = 0;
+    do {
+
+    } while (partialTotal > randomIndex);
+}
+
 
 function main() {
     let t = 0;
     let population = initialize();
+    population = evaluate(population);
+    console.log(selectParents2(population))
+    console.log(selectParents(population));
 
-    let sum = evaluate(population);
-    console.log(sum)
 }
 
 main()
