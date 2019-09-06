@@ -34,6 +34,7 @@ const global_items = [{
 
 ];
 
+
 let generateChromosome = () => {
     let chromosome = [];
     for (let i = 0; i < global_items.length; i++) {
@@ -41,24 +42,32 @@ let generateChromosome = () => {
     }
     return chromosome;
 }
+let getTotalProfitSumOfPopulation = (population) => {
+    let sum = 0;
+    for (let i = 0; i < population.length; i++) {
+        sum += population[i].totalProfit;
+    }
+    return sum
+}
 
 let initialize = () => {
     let population = [];
 
     for (let i = 0; i < MAX_CHROMOSOMES; i++) {
         population[i] = {
-            chromosomes: generateChromosome(),
+            chromosome: generateChromosome(),
             totalProfit: 0
         }
     }
+    
     return population;
 }
 
 let evaluate = (population) => {
     let sum = 0;
     for (let i = 0; i < population.length; i++) {
-        for (let j = 0; j < population[i].chromosomes.length; j++) {
-            if (population[i].chromosomes[j] == 1) {
+        for (let j = 0; j < population[i].chromosome.length; j++) {
+            if (population[i].chromosome[j] == 1) {
                 sum += global_items[j].profit;
             }
         }
@@ -66,17 +75,36 @@ let evaluate = (population) => {
         sum = 0;
     }
 
-    return population;
+    population.sort((a,b) => {
+        return a.totalProfit < b.totalProfit ? -1 : a.totalProfit > b.totalProfit ? 1 : 0;
+    })
 
+    let totalSum = getTotalProfitSumOfPopulation(population);
+    
+    let partialTotal = 0;
+
+    let newPop = [];
+
+    let rand = parseInt(Math.random() * totalSum);
+    for (let i = 0; i < MAX_CHROMOSOMES; i++){
+        partialTotal += population[i].totalProfit;
+        if(partialTotal >= rand){
+            return population[i]
+        }
+    }
 }
 
 
 function main() {
     let t = 0;
     let population = initialize();
+    console.log(population)
+    for(let i = 0; i < MAX_CHROMOSOMES; i++){
+        chromo = evaluate(population)
+        console.log(chromo)
+    }
 
-    let sum = evaluate(population);
-    console.log(sum)
+
 }
 
 main()
