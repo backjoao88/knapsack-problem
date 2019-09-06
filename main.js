@@ -35,12 +35,20 @@ const global_items = [{
 
 ];
 
+
 let generateChromosome = () => {
     let chromosome = [];
     for (let i = 0; i < global_items.length; i++) {
         chromosome[i] = parseInt((Math.random()) * 2);
     }
     return chromosome;
+}
+let getTotalProfitSumOfPopulation = (population) => {
+    let sum = 0;
+    for (let i = 0; i < population.length; i++) {
+        sum += population[i].totalProfit;
+    }
+    return sum
 }
 
 let initialize = () => {
@@ -52,6 +60,7 @@ let initialize = () => {
             totalProfit: 0
         }
     }
+    
     return population;
 }
 
@@ -67,8 +76,23 @@ let evaluate = (population) => {
         sum = 0;
     }
 
-    return population;
+    population.sort((a,b) => {
+        return a.totalProfit < b.totalProfit ? -1 : a.totalProfit > b.totalProfit ? 1 : 0;
+    })
 
+    let totalSum = getTotalProfitSumOfPopulation(population);
+    
+    let partialTotal = 0;
+
+    let newPop = [];
+
+    let rand = parseInt(Math.random() * totalSum);
+    for (let i = 0; i < MAX_CHROMOSOMES; i++){
+        partialTotal += population[i].totalProfit;
+        if(partialTotal >= rand){
+            return population[i]
+        }
+    }
 }
 
 let selectParents = (population) => {
@@ -89,9 +113,18 @@ let selectParents = (population) => {
 function main() {
     let t = 0;
     let population = initialize();
+<<<<<<< HEAD
     population = evaluate(population);
     console.log(selectParents2(population))
     console.log(selectParents(population));
+=======
+    console.log(population)
+    for(let i = 0; i < MAX_CHROMOSOMES; i++){
+        chromo = evaluate(population)
+        console.log(chromo)
+    }
+
+>>>>>>> 6edab632bfd1286a779051e65e6bb85b26cc061a
 
 }
 
