@@ -1,4 +1,12 @@
-const MAX_KNAPSACK_CAPACITY = 35;
+var http = require('http');
+
+http.createServer(function(req, res) {
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end('Hello World!');
+}).listen(8080);
+
+
+const MAX_KNAPSACK_CAPACITY = 45;
 const MAX_CHROMOSOMES = 10;
 const MAX_GENERATIONS = 100;
 const MUTATION_PROB = 0.5;
@@ -204,14 +212,31 @@ function main() {
     while (i < MAX_GENERATIONS) {
         let sort = sorted(population)
         population = evaluatePopulation(sort);
-        //console.log("### Generation " + i + " ###");
-        //console.log(population)
+        console.log("### Generation " + i + " ###");
+        console.log(population)
         i = i + 1;
     }
 
     console.log("### Final Generation ###");
+
     console.log(population)
 
+    console.log("### Solution Found ###");
+
+    console.log(population[0])
+
+    console.log("### Statistics ###")
+
+    console.log("# Max Knapsack Capacity -> " + MAX_KNAPSACK_CAPACITY)
+
+    console.log("## ITENS ##")
+
+    for (let i = 0; i < 10; i++) {
+        if (population[0][i] == 1) {
+            console.log("\rIndex #" + i + ": ");
+            console.log(global_items[i])
+        }
+    }
 
 }
 
