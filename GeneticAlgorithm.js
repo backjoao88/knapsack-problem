@@ -1,79 +1,99 @@
-var http = require('http');
 
-http.createServer(function(req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.end('Hello World!');
-}).listen(8080);
+/*
+    Solução para o Problema da Mochila 0-1.
+    Disciplina: IA
+    Aluno: João Paulo Back.
+*/
 
 
-const MAX_KNAPSACK_CAPACITY = 45;
-const MAX_CHROMOSOMES = 10;
-const MAX_GENERATIONS = 100;
-const MUTATION_PROB = 0.5;
+/* Lista de itens a serem colocados na mochila */
 
-const global_items = [{
-        name: 'Hamburguer',
-        weight: 2,
-        profit: 5
-    },
+const globalItems = [
     {
-        name: 'Casaco',
-        weight: 3,
-        profit: 6
-    },
-    {
-        name: 'Martelo',
-        weight: 10,
-        profit: 2
-    },
-    {
-        name: 'Prego',
-        weight: 5,
-        profit: 2
-    },
-    {
-        name: 'Limao',
-        weight: 4,
-        profit: 8
-    },
-    {
-        name: 'Maça',
-        weight: 6,
-        profit: 2
-    },
-    {
-        name: 'Maça',
-        weight: 6,
-        profit: 2
-    },
-    {
-        name: 'Vassoura',
-        weight: 2,
-        profit: 2
-    },
-    {
-        name: 'Pá',
+        name: 'Item01',
         weight: 12,
+        profit: 4
+    },
+    {
+        name: 'Item02',
+        weight: 10,
+        profit: 14
+    },
+    {
+        name: 'Item03',
+        weight: 08,
+        profit: 10
+    },
+    {
+        name: 'Item04',
+        weight: 10,
+        profit: 12
+    },
+    {
+        name: 'Item05',
+        weight: 13,
+        profit: 10
+    },
+    {
+        name: 'Item06',
+        weight: 05,
+        profit: 10
+    },
+    {
+        name: 'Item07',
+        weight: 18,
+        profit: 12
+    },
+    {
+        name: 'Item08',
+        weight: 03,
         profit: 15
     },
     {
-        name: 'Caneta',
-        weight: 2,
-        profit: 1
+        name: 'Item09',
+        weight: 12,
+        profit: 12
     },
+    {
+        name: 'Item10',
+        weight: 09,
+        profit: 02
+    }
 
 ];
+
+
+/* Constante que define a capacidade máxima da mochila */
+const MAX_KNAPSACK_CAPACITY = 10 * (globalItems.length);
+/* Constante que define o número máximo de cromossomos de um indivíduo */
+const MAX_CHROMOSOMES = 10;
+/* Número máximo de gerações a serem atingidas */
+const MAX_GENERATIONS = 100;
+/* Valor de mutação */
+const MUTATION_PROB = 0.08;
+
+
+/* Função que define a avaliação de fitness 
+*   Percorre todo o cromossomo, caso o valor do gene na posição i
+*   seja 1, o seu valor de fitness e o valor de peso é somado ao total de valor e de peso,
+*   respectivamente. 
+*   Ao percorrer todo o cromossomo, é verificado se o peso total dos
+*   genes (itens) do cromossomo não ultrapassou o limite máximo da mochila, caso ultrapassou
+*   o fitness desse cromossomo é 0, caso não, o fitness desse cromossomo é igual a soma do valor
+*   de todos os genes que possuem valor 1.
+*
+*/
 
 function fitness(chromosome) {
     total_value = 0
     total_weight = 0
     index = 0
     for (let i = 0; i < chromosome.length; i++) {
-        if (index > global_items.length)
+        if (index > globalItems.length)
             break
         if (chromosome[i] == 1) {
-            total_value += global_items[index].profit
-            total_weight += global_items[index].weight
+            total_value += globalItems[index].profit
+            total_weight += globalItems[index].weight
         }
         index += 1
     }
@@ -84,6 +104,9 @@ function fitness(chromosome) {
         return total_value
 }
 
+/* Função que define uma população aleatória com base na função que 
+* cria um cromossomo aleatório */
+
 function initializePopulation() {
     let population = [];
     for (let i = 0; i < MAX_CHROMOSOMES; i++) {
@@ -91,6 +114,8 @@ function initializePopulation() {
     }
     return population;
 }
+
+/* Função que cria um cromossomo aleatório */
 
 function initializeIndividual() {
     let chromosome = [];
@@ -100,11 +125,16 @@ function initializeIndividual() {
     return chromosome;
 }
 
+/* 
+*  Função que realiza a mutação de um cromossomo 
+*   É gerado um número randômico entre 0 e o número total de itens globais
+*   para determinar a onde será realizado a mutação.
+*   O índice escolhido tem seu valor trocado: Caso seja 0, muda para 1. 
+*   Caso seja 1, muda para 0.
+*/
+
 function mutate(individual) {
-    /*
-    Changes a random element of the permutation array from 0 - > 1 or from 1 - > 0. ""
-    */
-    let r = parseInt((Math.random()) * 2);
+    let r = parseInt((Math.random()) * globalItems.length-1);
     if (individual[r] == 1) {
         individual[r] = 0
     } else {
@@ -113,6 +143,18 @@ function mutate(individual) {
 
     return individual
 }
+
+/* 
+*  Função que realiza o crossover de um cromossomo 
+*   Para realizar o cruzamento, são recebidos como parâmetro dois cromossomos.
+*   Primeiramente, é gerado randomicamente o ponto de crossover, que deve estar entre
+*   1 e o penúltimo índice do cromossomo.
+*   Depois, é percorrido da posição 0 até o ponto de crossover no cromossomo macho, 
+*   e adicionando os valores ao novo cromossomo.
+*   Por último, é percorrido do ponto de crossover até o valor maximo de cromossomos no
+*   cromossomo fêmea, e adicionando os valores ao novo cromossomo.
+*  
+*/
 
 function crossover(male, female) {
     let crossOverPoint = parseInt(Math.random() * (MAX_CHROMOSOMES - 2)) + 1;
@@ -133,17 +175,30 @@ function crossover(male, female) {
 
 }
 
+/* Função que realizar a evolução da população 
+*   Como parâmetro, é recebido uma população ordenada pelo valor de fitness.
+*   No início, são adicionados o primeiro e o segundo cromossomo na nova população,
+*   que são os cromossomos com o melhor valor de fitness da população recebida.
+*   Em seguida, é criado a população de cromossomos filhos, e determinado qual será o 
+*   tamanho dessa população (desired_length), no caso sempre será o tamanho da população recebida,
+*   menos o tamanho do vetor dos pais (2).
+*   Assim, para cada novo cromossomo que surge, ele passa pelo processo de crossover e talvez
+*   pelo processo de mutação.
+*   Ao fim, o cromossomo é adicionado a um vetor de filhos, e ao final do loop, o vetor de
+*   filhos é adicionado a nova população.
+*/
+
 
 function evaluatePopulation(population) {
 
-    /* Parents selection */
+    /* Seleção dos pais com o melhor valor de fitness */
 
     let newPop = [];
 
     newPop.push(population[population.length - 1].chromosome)
     newPop.push(population[population.length - 2].chromosome)
 
-    /* Breeding */
+    /* Geração dos filhos (realizar o 'breeding') */
 
     let children = [];
     let desired_length = population.length - newPop.length;
@@ -171,6 +226,9 @@ function evaluatePopulation(population) {
 
     return newPop;
 }
+
+/* Função que recebe uma população como parâmetro e retorna uma nova população
+ordenada pelo valor de fitness de cada cromossomo */
 
 function sorted(population) {
     function compare(a, b) {
@@ -200,6 +258,7 @@ function sorted(population) {
     return sorted;
 }
 
+/* Função main, responsável por inicializar a população e realizar o controle das gerações. */
 
 function main() {
 
@@ -208,35 +267,37 @@ function main() {
     let population = initializePopulation();
 
     console.log("### Initial Generation ###")
-    console.log(population)
+    console.log(sorted(population))
     while (i < MAX_GENERATIONS) {
         let sort = sorted(population)
         population = evaluatePopulation(sort);
         console.log("### Generation " + i + " ###");
-        console.log(population)
+        console.log(sorted(population))
         i = i + 1;
     }
 
+    let lastItemIndex = population.length-1;
+
     console.log("### Final Generation ###");
 
-    console.log(population)
+    console.log(sorted(population))
 
     console.log("### Solution Found ###");
 
-    console.log(population[0])
+    console.log(population[lastItemIndex])
 
-    console.log("### Statistics ###")
+    // console.log("### Statistics ###")
 
-    console.log("# Max Knapsack Capacity -> " + MAX_KNAPSACK_CAPACITY)
+    // console.log("# Max Knapsack Capacity -> " + MAX_KNAPSACK_CAPACITY)
 
-    console.log("## ITENS ##")
+    // console.log("## ITENS ##")
 
-    for (let i = 0; i < 10; i++) {
-        if (population[0][i] == 1) {
-            console.log("\rIndex #" + i + ": ");
-            console.log(global_items[i])
-        }
-    }
+    // for (let i = 0; i < 10; i++) {
+    //     if (population[lastItemIndex][i] == 1) {
+    //         console.log("\rIndex #" + i + ": ");
+    //         console.log(globalItems[i])
+    //     }
+    // }
 
 }
 
