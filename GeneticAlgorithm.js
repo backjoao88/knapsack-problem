@@ -64,13 +64,15 @@ const globalItems = [
 
 
 /* Constante que define a capacidade máxima da mochila */
-const MAX_KNAPSACK_CAPACITY = 10 * (globalItems.length);
+const MAX_KNAPSACK_CAPACITY = 4 * (globalItems.length);
 /* Constante que define o número máximo de cromossomos de um indivíduo */
 const MAX_CHROMOSOMES = 10;
 /* Número máximo de gerações a serem atingidas */
 const MAX_GENERATIONS = 100;
 /* Valor de mutação */
 const MUTATION_PROB = 0.08;
+/* Valor máximo da população */
+const MAX_POPULATION = 20;
 
 
 /* Função que define a avaliação de fitness 
@@ -109,7 +111,7 @@ function fitness(chromosome) {
 
 function initializePopulation() {
     let population = [];
-    for (let i = 0; i < MAX_CHROMOSOMES; i++) {
+    for (let i = 0; i < MAX_POPULATION; i++) {
         population[i] = initializeIndividual()
     }
     return population;
@@ -286,18 +288,18 @@ function main() {
 
     console.log(population[lastItemIndex])
 
-    // console.log("### Statistics ###")
+    console.log("### Statistics ###")
 
-    // console.log("# Max Knapsack Capacity -> " + MAX_KNAPSACK_CAPACITY)
+    console.log("# Max Knapsack Capacity -> " + MAX_KNAPSACK_CAPACITY)
 
-    // console.log("## ITENS ##")
+    console.log("## ITENS ##")
 
-    // for (let i = 0; i < 10; i++) {
-    //     if (population[lastItemIndex][i] == 1) {
-    //         console.log("\rIndex #" + i + ": ");
-    //         console.log(globalItems[i])
-    //     }
-    // }
+    for (let i = 0; i < 10; i++) {
+        if (population[lastItemIndex][i] == 1) {
+            console.log("\rIndex #" + i + ": ");
+            console.log(globalItems[i])
+        }
+    }
 
 }
 
